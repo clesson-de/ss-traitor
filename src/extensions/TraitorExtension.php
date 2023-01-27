@@ -117,8 +117,10 @@ class TraitorExtension extends DataExtension
     }
 
     /**
+     * Returns the name of the member data object property whose value will be used for the text representation
+     * when saving or updating.
      *
-     * @return string|void
+     * @return string the name of the member data object property.
      */
     private function traitorField()
     {
