@@ -47,5 +47,5 @@ Silverstripe CMS developer documentation.
 
 ## Reporting Issues
 
-Please [create an issue](https://github.com/clesson-de/traitor/issues/new)
+Please [create an issue](https://github.com/clesson-de/ss-traitor/issues/new)
 for any bugs you've found, or features you're missing.
