@@ -36,6 +36,17 @@ class TraitorExtension extends DataExtension
     ];
 
     /**
+     * @var array
+     * @config
+     */
+    private static $defaults = [
+        'LastEditedByID' => null,
+        'LastEditedBy' => null,
+        'CreatedByID' => null,
+        'CreatedBy' => null,
+    ];
+
+    /**
      * Get the author of the last update of this entry.
      *
      * @return Member|string|null
@@ -89,7 +100,7 @@ class TraitorExtension extends DataExtension
      */
     private function traitorField()
     {
-        $configuredTraitorField = static::config()->traitor_field;
+        $configuredTraitorField = self::config()->traitor_field;
         return $configuredTraitorField ? $configuredTraitorField : 'Title';
     }
 

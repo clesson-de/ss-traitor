@@ -39,6 +39,16 @@ Example\Namespace\MyDataObject:
     - Clesson\Traitor\Extensions\TraitorExtension
 ```
 
+If you prefer to configure it in PHP, you can also add the extension directly to the classes you want to extend:
+```
+    use Clesson\Traitor\Extensions\TraitorExtension;
+
+    private static $extensions = [
+        TraitorExtension::class,
+        ...
+    ];
+```
+
 After creating the configuration, a ```dev/build``` must be executed.
 
 ### Configuration
