@@ -1,5 +1,5 @@
 # ss-traitor
-A simple extension for Silverstripe CMS, which logs the author of each record when it is created or updated.
+A simple extension for Silverstripe CMS, which logs the author of each record when it is created or updated. Originated from the need to build this extension again and again.
 
 ## Overview
 
@@ -16,22 +16,34 @@ composer require clesson-de/traitor
 ```
 The module is not enabled by default.
 
-Create a new file (e.g. traitor.yml) in the app/_config/ directory and insert the following paragraph. If the extension is not to be applied to all data objects, repeat the paragraph for each desired data object.
-After creating the configuration, a dev/build must be executed.
+Create a new file (e.g. ```traitor.yml```) in the ```app/_config/``` directory and insert the following paragraph. Alternatively, you can add the section to an existing config file (e.g. ```app/_config/mysite.yml```).
 
 ```
 ---
-Name: config-traitor
+Name: traitor config
 ---
 
 SilverStripe\ORM\DataObject:
   extensions:
     - Clesson\Traitor\Extensions\TraitorExtension
 ```
+If the extension is not to be applied to all data objects, repeat the paragraph for each desired data object:
+
+```
+Page:
+  extensions:
+    - Clesson\Traitor\Extensions\TraitorExtension
+
+Example\Namespace\MyDataObject:
+  extensions:
+    - Clesson\Traitor\Extensions\TraitorExtension
+```
+
+After creating the configuration, a ```dev/build``` must be executed.
 
 ### Configuration
 
-A configuration is not mandatory but possible. By default, the first and last name of the author (Title) are stored. If the e-mail address or any other property of the member object should be stored instead, this field can be set in the configuration:
+A configuration is not mandatory but possible. By default, the first and last name of the author (```Title```) are stored. If the e-mail address or any other property of the member object should be stored instead, this field can be set in the configuration:
 
 ```
 Clesson\Traitor\Extensions\TraitorExtension:
