@@ -3,6 +3,9 @@
 namespace Clesson\Traitor\Extensions;
 
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DataQuery;
+use SilverStripe\ORM\DB;
+use SilverStripe\ORM\Queries\SQLSelect;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\ORM\DataExtension;
@@ -36,7 +39,7 @@ class TraitorExtension extends DataExtension
      * @var array
      * @config
      */
-    private static $db = [
+    private static $fixed_fields = [
         'LastEditedByID' => 'Int',
         'LastEditedBy' => 'Varchar',
         'CreatedByID' => 'Int',
@@ -97,23 +100,63 @@ class TraitorExtension extends DataExtension
     }
 
     /**
+     * @inheritDoc
+     */
+    public function augmentDatabase()
+    {
+        // $tableName = DataObject::getSchema()->tableName($this->owner);
+        $tableName = $this->owner->baseTable();
+        $fields = [
+            'LastEditedByID' => 'Int',
+            'LastEditedBy' => 'Varchar',
+            'CreatedByID' => 'Int',
+            'CreatedBy' => 'Varchar',
+        ];
+        $indexes = [
+            'LastEditedByID' => [
+                'type' => 'index',
+                'columns' => ['LastEditedByID'],
+            ],
+            'CreatedByID' => [
+                'type' => 'index',
+                'columns' => ['CreatedByID'],
+            ],
+        ];
+        DB::require_table($tableName, $fields, $indexes, true, null);
+    }
+
+    /**
      * Save the current author and, if the record does not yet exist, the original author.
      *
-     * @return void
+     * @inheritDoc
      */
-    public function onBeforeWrite()
+    public function augmentWrite(&$manipulation)
     {
-        parent::onBeforeWrite();
-
-        $traitorField = $this->traitorField();
         if ($member = Security::getCurrentUser()) {
-            $this->owner->LastEditedByID = $member->ID;
-            $this->owner->LastEditedBy = $member->$traitorField;
-            if (!$this->owner->exists()) {
-                $this->owner->CreatedByID = $member->ID;
-                $this->owner->CreatedBy = $member->$traitorField;
+            $traitorField = $this->traitorField();
+            $tableName = DataObject::getSchema()->tableName($this->owner);
+            $manipulation[$tableName]['fields']['LastEditedByID'] = $member->ID;
+            $manipulation[$tableName]['fields']['LastEditedBy'] = $member->$traitorField;
+            if (
+                isset($manipulation[$tableName]['command']) &&
+                $manipulation[$tableName]['command'] == 'insert'
+            ) {
+                $manipulation[$tableName]['fields']['CreatedByID'] = $member->ID;
+                $manipulation[$tableName]['fields']['CreatedBy'] = $member->$traitorField;
             }
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function augmentSQL(SQLSelect $query, DataQuery $dataQuery = null)
+    {
+        $tableName = $this->owner->baseTable();
+        $query->addSelect("\"{$tableName}\".\"LastEditedByID\"");
+        $query->addSelect("\"{$tableName}\".\"LastEditedBy\"");
+        $query->addSelect("\"{$tableName}\".\"CreatedByID\"");
+        $query->addSelect("\"{$tableName}\".\"CreatedBy\"");
     }
 
     /**

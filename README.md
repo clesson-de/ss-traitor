@@ -62,6 +62,16 @@ Clesson\Traitor\Extensions\TraitorExtension:
   traitor_field: 'Email'
 ```
 
+### Usage
+
+The module also includes the TraitorView class, which allows you to easily bring the traitor properties into the GridView. Just add the TraitorView component to the GridView configuration as shown in the example:
+```
+use Clesson\Traitor\Forms\GridField\TraitorView;
+
+$config = $grid->getConfig();
+$config->addComponent(TraitorView::create());
+```
+
 ## Contributing
 
 Contributions are welcome! Create an issue, explaining a bug or propose development
