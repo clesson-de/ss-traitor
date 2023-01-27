@@ -1,0 +1,5 @@
+---
+Name: traitor config
+---
+Clesson\Traitor\Extensions\TraitorExtension:
+  traitor_field: 'Title'
