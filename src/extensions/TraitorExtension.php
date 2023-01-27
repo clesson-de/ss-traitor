@@ -30,7 +30,7 @@ class TraitorExtension extends DataExtension
     /**
      * @config
      */
-    private static bool $traitor_field = 'Title';
+    private static string $traitor_field = 'Title';
 
     /**
      * @var array
