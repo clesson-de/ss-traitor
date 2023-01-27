@@ -23,7 +23,7 @@ Create a new file (e.g. ```traitor.yml```) in the ```app/_config/``` directory a
 Name: traitor config
 ---
 
-SilverStripe\ORM\DataObject:
+Page:
   extensions:
     - Clesson\Traitor\Extensions\TraitorExtension
 ```
@@ -48,6 +48,8 @@ If you prefer to configure it in PHP, you can also add the extension directly to
         ...
     ];
 ```
+
+Please note that you can only assign this extension to subclasses of DataObject. If you assign the extension for DataObject, you will get an error message.
 
 After creating the configuration, a ```dev/build``` must be executed.
 
