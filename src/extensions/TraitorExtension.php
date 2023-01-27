@@ -12,6 +12,9 @@ use SilverStripe\Core\Config\Configurable;
  * Extends a data object with the possibility to save the original author and the author of the last change.
  * Note: For versioned data objects, the Versioned extension saves the author anyway.
  *
+ * This class deliberately does not use has_one, has_many ... relations for the relationships to the member
+ * data object. Instead only the ID's of the members are stored.
+ *
  * @method Member|string|null Creator()
  * @method Member|string|null Editor()
  * @property int $LastEditedByID ID of the member of the last update
@@ -23,6 +26,11 @@ class TraitorExtension extends DataExtension
 {
 
     use Configurable;
+
+    /**
+     * @config
+     */
+    private static bool $traitor_field = 'Title';
 
     /**
      * @var array
@@ -49,29 +57,43 @@ class TraitorExtension extends DataExtension
     /**
      * Get the author of the last update of this entry.
      *
+     * This method returns the linked member data object if possible. If this is not possible for some reason
+     * (e.g. because the member no longer exists), the text representation is returned (see traitor_field
+     * configuration). If it is desired that the value null is returned instead of the text representation, the
+     * method must be called with $forceMember=true.
+     *
+     * @param bool $forceMember If true and no member data object is found, null is returned. If false (default),
+     * the text representation is returned.
      * @return Member|string|null
      */
-    public function Editor()
+    public function Editor($forceMember=false)
     {
         /** @var Member $member */
         if ($member = DataObject::get_by_id(Member::class, $this->owner->LastEditedByID)) {
             return $member;
         }
-        return $this->owner->LastEditedBy;
+        return $forceMember ? null : $this->owner->LastEditedBy;
     }
 
     /**
      * Get the original author of this entry.
      *
+     * This method returns the linked member data object if possible. If this is not possible for some reason
+     * (e.g. because the member no longer exists), the text representation is returned (see traitor_field
+     * configuration). If it is desired that the value null is returned instead of the text representation, the
+     * method must be called with $forceMember=true.
+     *
+     * @param bool $forceMember If true and no member data object is found, null is returned. If false (default),
+     * the text representation is returned.
      * @return Member|string|null
      */
-    public function Creator()
+    public function Creator($forceMember=false)
     {
         /** @var Member $member */
         if ($member = DataObject::get_by_id(Member::class, $this->owner->CreatedByID)) {
             return $member;
         }
-        return $this->owner->CreatedBy;
+        return $forceMember ? null : $this->owner->CreatedBy;
     }
 
     /**
@@ -100,7 +122,7 @@ class TraitorExtension extends DataExtension
      */
     private function traitorField()
     {
-        $configuredTraitorField = self::config()->traitor_field;
+        $configuredTraitorField = static::config()->get('traitor_field');
         return $configuredTraitorField ? $configuredTraitorField : 'Title';
     }
 
